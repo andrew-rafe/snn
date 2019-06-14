@@ -5,22 +5,20 @@
 #include <queue>
 
 nampespace SNN {
-  class Network {
-  public:
+    class Network {
+    public:
 
-    //CONSTRUCTOR AND DESTRUCTOR
-    Network();
-    Network(int num_layers, std::vector<int> neurons_per_layer);
-    ~Network();
+        //CONSTRUCTOR AND DESTRUCTOR
+        Network();
+        Network(int num_layers, std::vector<int> neurons_per_layer);
+        ~Network();
 
+    private:
+        
+        std::vector<Neuron*> inputs;
+        std::vector<Neuron*> outputs;
+        std::queue<Neuron*> to_process_firing;
+        
     
-
-  private:
-
-    std::vector<std::vector<Neuron*>> neurons;
-    std::vector<std::vector<float>> weights;
-
-    std::queue<Neuron*> unprocessed;
-
-  }
+    }
 }
