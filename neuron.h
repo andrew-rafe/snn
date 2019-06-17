@@ -2,7 +2,6 @@
 #define NEURON_H
 
 #include <vector>
-#include <pair>
 
 namespace SNN {
     
@@ -11,30 +10,30 @@ namespace SNN {
     public:
         
         Neuron();
-        Neuron(float threshold, float leak_resistance, float resting_potential,
-            float refractory_potential, float refractory_period);
+        //Neuron(float threshold, float leak_resistance, float resting_potential,
+        //    float refractory_potential, float refractory_period);
         ~Neuron();
         
         //A setter method to add all of the connections between this neuron and the next
         //layer of neurons
-        void set_neuron_connections(const std::vector<std::pair<Neuron*, float>>& connections);
+        void set_neuron_connections(const std::vector<Neuron*>& connections);
         
         //Will update the neuron potential due to leak based off how long it
         //has been since this neuron has been processed.
-        void update_neuron_potential_leak(const longlong& timestep);
+        void update_neuron_potential_leak(const long long& timestep);
         
         //Will update the neuron potential based off an incoming signal'
         //This will return true if the neuron potential exceeds its threshold
         //and will set this neuron into a period of refraction
-        bool adjust_neuron_potential(float incoming_potential, const longlong& timestep);
+        bool adjust_neuron_potential(float incoming_potential, const long long& timestep);
         
         //This method will process the firing of this neuron to all of its connected neurons
-        std::vector<Neuron*> process_firing(const longlong& timestep);
+        std::vector<Neuron*> process_firing(const long long& timestep);
         
         //Will set this neuron to be in a refractory_period
-        void set_refractory(const longlong& timestep);
+        void set_refractory(const long long& timestep);
         
-        friend std::ostream& operator<<(std::ostream& os, const Neuron& neuron);
+        //friend std::ostream& operator<<(std::ostream& os, const Neuron& neuron);
 
     private:
         
@@ -48,8 +47,8 @@ namespace SNN {
             
         //KEEPS TRACK OF CURRENT NEURON POTENTIAL OF NEURON
         float potential;
-        longlong last_update_timestep;
-        longlong refractory_start_timestep;
+        long long last_update_timestep;
+        long long refractory_start_timestep;
 
         //HYPERPARAMETERS PER NEURON
         float threshold;
@@ -58,7 +57,7 @@ namespace SNN {
         int refractory_period;
         float refractory_potential;
 
-  }
+  };
 }
 
 #endif

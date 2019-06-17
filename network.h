@@ -4,22 +4,24 @@
 #include <vector>
 #include <queue>
 
+#include "neuron.h"
+
 namespace SNN {
     class Network {
     public:
 
-        //CONSTRUCTOR AND DESTRUCTOR
+        //CONSTRUCTOR AND DESTRUCTdwOR
         //The constructors will populate the inputs and output layers
         //and then deal with the connections between all of the hidden
         //layer neurons
-        Network();
-        Network(int num_layers, std::vector<int> neurons_per_layer);
+        //Network();
+        Network(const int num_layers, const std::vector<int>& neurons_per_layer);
         ~Network();
         
-        void process_inputs(std::vector<float> input_values);
+        int process_inputs(std::vector<float> input_values, const long long& timestep);
         std::vector<Neuron*> get_outputs();
         
-        friend std::ostream& operator<<(std::ostream& os, const Network& network);
+        //friend std::ostream& operator<<(std::ostream& os, const Network& network);
 
     private:
         
@@ -28,7 +30,7 @@ namespace SNN {
         std::vector<std::vector<Neuron*>> hidden_layers;
         std::vector<Neuron*> create_layer(int num_in_layer);
         
-    }
+    };
 }
 
 #endif
