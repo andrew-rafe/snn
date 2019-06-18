@@ -18,7 +18,7 @@ namespace SNN {
         Network(const int num_layers, const std::vector<int>& neurons_per_layer);
         ~Network();
         
-        int process_inputs(std::vector<float> input_values, const long long& timestep);
+        int process_inputs(std::vector<float> input_values, long long timestep);
         std::vector<Neuron*> get_outputs();
         
         //friend std::ostream& operator<<(std::ostream& os, const Network& network);

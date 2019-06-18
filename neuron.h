@@ -20,19 +20,21 @@ namespace SNN {
         
         //Will update the neuron potential due to leak based off how long it
         //has been since this neuron has been processed.
-        void update_neuron_potential_leak(const long long& timestep);
+        void update_neuron_potential_leak(long long timestep);
         
         //Will update the neuron potential based off an incoming signal'
         //This will return true if the neuron potential exceeds its threshold
         //and will set this neuron into a period of refraction
-        bool adjust_neuron_potential(float incoming_potential, const long long& timestep);
+        bool adjust_neuron_potential(float incoming_potential, long long timestep);
         
         //This method will process the firing of this neuron to all of its connected neurons
-        std::vector<Neuron*> process_firing(const long long& timestep);
+        std::vector<Neuron*> process_firing(long long timestep);
         
         //Will set this neuron to be in a refractory_period
-        void set_refractory(const long long& timestep);
+        void set_refractory(long long timestep);
         
+        
+        float get_potential();
         //friend std::ostream& operator<<(std::ostream& os, const Neuron& neuron);
 
     private:

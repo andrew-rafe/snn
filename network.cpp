@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <unordered_map>
+#include <iostream>
 
 #include "network.h"
 
@@ -77,13 +78,13 @@ std::vector<Neuron*> Network::create_layer(int num_in_layer) {
 //Send the input values to the input layer which will propogate everything
 //through the network. It will return the number of neurons that have been processed
 //in this timestep
-int Network::process_inputs(std::vector<float> input_values, const long long& timestep) { 
+int Network::process_inputs(std::vector<float> input_values, long long timestep) { 
     //Create an unordered map to keep track of all of the neurons added to the process queue
     std::unordered_map<Neuron*, bool> already_added_to_queue;
     //Keep track of all the neurons needed to be processed
     std::queue<Neuron*> to_process;
     //Keep track of how many neurons have been processed
-    int neurons_processed;
+    int neurons_processed = 0;
     //Check that the amount of input values matches the number of input neurons
     assert(input_values.size() == inputs.size());
     //Give the input neurons the input values
@@ -93,7 +94,7 @@ int Network::process_inputs(std::vector<float> input_values, const long long& ti
         //Queue up all the inputs that need to be processed for firing
         if (process_fire) {
             //Check to make sure it has not already been added to the queue to be processed
-            if (already_added_to_queue.find(inputs[i]) != already_added_to_queue.end()) {
+            if (already_added_to_queue.find(inputs[i]) == already_added_to_queue.end()) {
                 to_process.push(inputs[i]);
                 already_added_to_queue.insert({inputs[i], true});
             }
@@ -104,7 +105,6 @@ int Network::process_inputs(std::vector<float> input_values, const long long& ti
             neurons_processed++;
         }
         
-        return neurons_processed;
     }
     
     std::vector<Neuron*> add_to_queue;
@@ -121,12 +121,14 @@ int Network::process_inputs(std::vector<float> input_values, const long long& ti
         //Check whether the neuron has already been added to the queue and push it if it hasnt
         //CAN I DO THIS MORE EFFICIENTLY??
         for (Neuron* neuron : add_to_queue) {
-            if (already_added_to_queue.find(neuron) != already_added_to_queue.end()) {
+            if (already_added_to_queue.find(neuron) == already_added_to_queue.end()) {
                 to_process.push(neuron);
                 already_added_to_queue.insert({neuron, true});
             }
         }
     }
+    
+    return neurons_processed;
 }
 
 //Will return the output layer

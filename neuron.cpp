@@ -18,7 +18,7 @@ Neuron::Neuron() {
     potential = 0;
     last_update_timestep = 0;
     refractory_start_timestep = 0 - refractory_period;
-
+    num_connections = 0;
 }
 
 /*Neuron::Neuron(float threshold, float leak_resistance, float resting_potential,
@@ -34,7 +34,9 @@ Neuron::Neuron() {
     refractory_start_timestep = 0 - refractory_period;
 }*/
 
-Neuron::~Neuron() { } // DONT NEED ANYTHING HERE AS EVERYTHING IS PRIMITIVE
+Neuron::~Neuron() {
+    
+} // DONT NEED ANYTHING ELSE HERE AS EVERYTHING IS PRIMITIVE
 
 //Given a vector of all of the neurons in the next layer, this method will
 //populate this neurons connections member variable with random weights between
@@ -46,14 +48,15 @@ void Neuron::set_neuron_connections(const std::vector<Neuron*>& neurons_in_next)
     //next layer
     for (int i = 0; i < neurons_in_next.size(); i++) {
         //Will add one of the connections with a random weight
-        connections.push_back(std::make_pair(neurons_in_next[i], static_cast<float>(rand()) / static_cast<float>(RAND_MAX)));
+        connections.push_back({neurons_in_next[i], static_cast<float>(rand()) / static_cast<float>(RAND_MAX)});
+        num_connections++;
     }
     
 }
 
 //Will update the neuron potential due to leak based off how long it
 //has been since this neuron has been processed.
-void Neuron::update_neuron_potential_leak(const long long& timestep) {
+void Neuron::update_neuron_potential_leak(long long timestep) {
     //Check how many timesteps it has been since the last update
     int steps_since_last_update = timestep - last_update_timestep;
     //Loop through and apply the update according to equation
@@ -80,14 +83,11 @@ void Neuron::update_neuron_potential_leak(const long long& timestep) {
         }
     }*/
 
-    //We need to set leak update step to be the current time step to prevent
-    //leaking too much
-    last_update_timestep = timestep;
 }
 
 //Will update the neuron potential based off an incoming signal
 //Need to make sure not to do anything to neurons within refractory_periods
-bool Neuron::adjust_neuron_potential(float incoming_potential, const long long& timestep) {
+bool Neuron::adjust_neuron_potential(float incoming_potential, long long timestep) {
     //Check that this neuron is not in a period of refraction
     //if it is we don't want to do anything to its neuron potential
     if (timestep - refractory_period >= refractory_start_timestep) {
@@ -102,6 +102,11 @@ bool Neuron::adjust_neuron_potential(float incoming_potential, const long long& 
         
         //Then we need to add the incoming potential to this neuron
         potential += incoming_potential;
+        //std::cout<<potential<<std::endl;
+        
+        //We need to set leak update step to be the current time step to prevent
+        //leaking too much
+        last_update_timestep = timestep;
         //Set for firing if neuron potential is greater than threshold and put
         //this neuron into a period of refraction
         if (potential >= threshold) {
@@ -118,7 +123,7 @@ bool Neuron::adjust_neuron_potential(float incoming_potential, const long long& 
 
 //Will process the firing of this neuron and return a vector of all of the
 //next layer neurons that need to be processed for firing
-std::vector<Neuron*> Neuron::process_firing(const long long& timestep) {
+std::vector<Neuron*> Neuron::process_firing(long long timestep) {
     //Will only reach this function when it has been queued to be processed for firing
     //the potential will have already have been reset and sent into a refractory period
     //when this neuron is queued for processing the firing.
@@ -132,13 +137,17 @@ std::vector<Neuron*> Neuron::process_firing(const long long& timestep) {
             new_to_process.push_back(connections[i].first);
         }
     }
-    
+
     return new_to_process;
 }
 
 //Will set this neuron to be in a refractory_period
-void Neuron::set_refractory(const long long& timestep) {
+void Neuron::set_refractory(long long timestep) {
     refractory_start_timestep = timestep;
     potential = refractory_potential;
+}
+
+float Neuron::get_potential() {
+    return potential;
 }
 
