@@ -11,18 +11,18 @@
 using namespace SNN;
 
 //Network::Network() { }
-Network::Network(const int num_layers, const std::vector<int>& neurons_per_layer) { 
-    
+Network::Network(const int num_layers, const std::vector<int>& neurons_per_layer) {
+
     //Seed randomness when creating network
     srand(static_cast<unsigned>(time(0)));
-    
+
     //Check that the network has an input, at least one hidden and an output layer
     //i.e. that the num layers is greater or equal to 3
     assert(num_layers >= 3);
     //Then need to check whether the number of layers matches the vector size
     //storing the neurons per layer
     assert(neurons_per_layer.size() == num_layers);
-    
+
     //If the above asserts pass then we need to start creating the layers
     //First create the input layer
     inputs = create_layer(neurons_per_layer[0]);
@@ -38,7 +38,7 @@ Network::Network(const int num_layers, const std::vector<int>& neurons_per_layer
         }
         prev_layer = next_layer;
     }
-    
+
     //Finalise the output layer
     //Create the output layer
     outputs = create_layer(neurons_per_layer[neurons_per_layer.size() - 1]);
@@ -78,7 +78,7 @@ std::vector<Neuron*> Network::create_layer(int num_in_layer) {
 //Send the input values to the input layer which will propogate everything
 //through the network. It will return the number of neurons that have been processed
 //in this timestep
-int Network::process_inputs(std::vector<float> input_values, long long timestep) { 
+int Network::process_inputs(std::vector<float> input_values, long long timestep) {
     //Create an unordered map to keep track of all of the neurons added to the process queue
     std::unordered_map<Neuron*, bool> already_added_to_queue;
     //Keep track of all the neurons needed to be processed
@@ -104,9 +104,9 @@ int Network::process_inputs(std::vector<float> input_values, long long timestep)
             //in the queue
             neurons_processed++;
         }
-        
+
     }
-    
+
     std::vector<Neuron*> add_to_queue;
     Neuron* next;
     //Now process all of the neurons in the queue until all necessary neurons are processed
@@ -127,13 +127,27 @@ int Network::process_inputs(std::vector<float> input_values, long long timestep)
             }
         }
     }
-    
+
     return neurons_processed;
 }
 
 //Will return the output layer
-std::vector<Neuron*> Network::get_outputs() { 
-    return outputs;
+void Network::get_outputs() {
+    bool output_fire[outputs.size()] = {false} ;
+    for (unsigned int i = 0; i < outputs.size(); i++) {
+      if (outputs[i]->get_potential() < float(0)) output_fire[i] = true;
+    }
+    //return output_fire;
+}
+
+int Network::get_num_neurons() {
+    int num_neurons = 0;
+    num_neurons += inputs.size();
+    for (std::vector<Neuron*> layer : hidden_layers) {
+        num_neurons += layer.size();
+    }
+    num_neurons += outputs.size();
+    return num_neurons;
 }
 
 //Overload to the << operator for printing individual neuron information
@@ -141,4 +155,3 @@ std::vector<Neuron*> Network::get_outputs() {
     os << "Neuron Potential: " << neuron.potential;
     return os;
 }*/
-    
