@@ -9,6 +9,6 @@ cdef extern from "network.cpp":
 cdef extern from "network.h" namespace "SNN":
   cdef cppclass Network:
     Network(int, vector[int]&) except +
-    int process_inputs(vector[float], long long)
+    int process_inputs(float [], long long)
     int get_num_neurons()
     void get_outputs()

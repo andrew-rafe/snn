@@ -1,4 +1,5 @@
 from distutils.core import setup
 from Cython.Build import cythonize
+import numpy
 
-setup(ext_modules=cythonize("pyNet.pyx"))
+setup(ext_modules=cythonize("pyNet.pyx"), include_dirs=[numpy.get_include()])

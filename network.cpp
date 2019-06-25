@@ -78,7 +78,7 @@ std::vector<Neuron*> Network::create_layer(int num_in_layer) {
 //Send the input values to the input layer which will propogate everything
 //through the network. It will return the number of neurons that have been processed
 //in this timestep
-int Network::process_inputs(std::vector<float> input_values, long long timestep) {
+int Network::process_inputs(float input_values[], long long timestep) {
     //Create an unordered map to keep track of all of the neurons added to the process queue
     std::unordered_map<Neuron*, bool> already_added_to_queue;
     //Keep track of all the neurons needed to be processed
