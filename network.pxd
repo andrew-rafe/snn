@@ -1,4 +1,5 @@
 from libcpp.vector cimport vector
+from libcpp.string cimport string
 from libcpp cimport bool
 from neuron cimport Neuron
 
@@ -9,6 +10,6 @@ cdef extern from "network.cpp":
 cdef extern from "network.h" namespace "SNN":
   cdef cppclass Network:
     Network(int, vector[int]&) except +
-    int process_inputs(float [], long long)
+    int process_inputs(float [], long long, int)
     int get_num_neurons()
-    void get_outputs()
+    string get_outputs()

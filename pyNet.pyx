@@ -23,13 +23,13 @@ cdef class PyNetwork:
   def __dealloc__(self):
     del self.c_net
 
-  def process_inputs(self, np.ndarray[np.float_t,ndim=1,mode='c']input_values, timestep):
+  def process_inputs(self, np.ndarray[np.float_t,ndim=1,mode='c']input_values, timestep, num_inputs):
     cdef np.ndarray[float, ndim=1, mode="c"] c_inputs = np.ascontiguousarray(input_values, dtype = ctypes.c_float)
-    cdef float * input_pointer = <float *>malloc(np.shape(input_values) * sizeof(float*))
+    cdef float * input_pointer = <float *>malloc(input_values.size * sizeof(float))
     if not input_pointer:
       raise MemoryError
     try:
-      return self.c_net.process_inputs(<float *>& input_pointer, timestep)
+      return self.c_net.process_inputs(input_pointer, timestep, num_inputs)
     finally:
       free(input_pointer)
 
@@ -37,4 +37,4 @@ cdef class PyNetwork:
     return self.c_net.get_num_neurons()
 
   def get_outputs(self):
-    self.c_net.get_outputs()
+    return self.c_net.get_outputs()

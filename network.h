@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <queue>
+#include <string>
 
 #include "neuron.h"
 
@@ -18,10 +19,10 @@ namespace SNN {
         Network(const int num_layers, const std::vector<int>& neurons_per_layer);
         ~Network();
 
-        int process_inputs(float input_values[], long long timestep);
+        int process_inputs(float input_values[], long long timestep, int num_inputs);
         int get_num_neurons();
-        void get_outputs();
-
+        std::string get_outputs();
+        std::string print_network();
         //friend std::ostream& operator<<(std::ostream& os, const Network& network);
 
     private:

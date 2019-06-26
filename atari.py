@@ -1,31 +1,35 @@
 import gym
+import time
+from pyNet import PyNetwork
 import numpy as np
 
-def write_obs(i, obs):
-    obs = obs.flatten()
-    obs = obs / 255;
+# Create network as global variable
+network = PyNetwork(2, {4, 2})
 
-    file_name = "tmp/obs_" + str(i)
-    f = open(file_name, "w")
-    for i in range(obs.size):
-        f.write("%f\n" % obs[i])
+def rgb2gray(rgb):
+    return np.dot(rgb[...,:3], [0.2989, 0.5870, 0.1140])
+
+def get_out(timestep, obs):
+    #obs = rgb2gray(obs)
+    obs = np.asarray(obs)
+    obs.flatten()
+    #obs = obs / 255;
+    num_inputs = obs.size
+    return network.process_inputs(obs, timestep+1, num_inputs)
 
 def main():
-    env = gym.make("SpaceInvaders-v0")
+    env = gym.make("CartPole-v1")
     observation = env.reset()
-    
-    print(env.action_space.n)
+    print(observation);
     for i in range(1000):
-        write_obs(i, observation)
+        get_out(i, observation)
+        print(network.get_outputs())
         env.render()
         observation, reward, done, info = env.step(env.action_space.sample())
         if (done):
-            break
-            
+            observation = env.reset()
+
     env.close()
-
-
-
 
 if __name__ == "__main__":
     main()

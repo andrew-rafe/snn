@@ -10,9 +10,9 @@ using namespace SNN;
 //DEFAULT CONSTRUCTOR
 Neuron::Neuron() {
     threshold = 1;
-    leak_resistance = 5;
+    leak_resistance = 10;
     resting_potential = 0;
-    refractory_period = 5;
+    refractory_period = 0;
     refractory_potential = -1;
 
     potential = 0;
@@ -35,7 +35,7 @@ Neuron::Neuron() {
 }*/
 
 Neuron::~Neuron() {
-    
+
 } // DONT NEED ANYTHING ELSE HERE AS EVERYTHING IS PRIMITIVE
 
 //Given a vector of all of the neurons in the next layer, this method will
@@ -44,32 +44,32 @@ Neuron::~Neuron() {
 //created.
 void Neuron::set_neuron_connections(const std::vector<Neuron*>& neurons_in_next) {
 
-    //Will add all of the connections from this neuron to every neuron in the 
+    //Will add all of the connections from this neuron to every neuron in the
     //next layer
     for (int i = 0; i < neurons_in_next.size(); i++) {
         //Will add one of the connections with a random weight
-        connections.push_back({neurons_in_next[i], static_cast<float>(rand()) / static_cast<float>(RAND_MAX)});
+        connections.push_back({neurons_in_next[i], (static_cast<float>(rand()) / static_cast<float>(RAND_MAX))});
         num_connections++;
     }
-    
+
 }
 
 //Will update the neuron potential due to leak based off how long it
 //has been since this neuron has been processed.
 void Neuron::update_neuron_potential_leak(long long timestep) {
     //Check how many timesteps it has been since the last update
-    int steps_since_last_update = timestep - last_update_timestep;
+    int steps_since_last_update = static_cast<unsigned int>(timestep) - last_update_timestep;
     //Loop through and apply the update according to equation
     //leak(t) = -1/leak_resistance * (potential - resting_potential)
     //TODO:Is there another way to calculate the leak in one step instead
     // of looping through all of the steps sinces last update
-    
+
     //This method only works with resting potential = 0. Need to figure out
     //a different method for resting_potental != 0
     if (steps_since_last_update > 0) {
         potential = potential * pow((1-1/leak_resistance), static_cast<float>(steps_since_last_update));
     }
-    
+
     /*
     while (steps_since_last_update > 0) {
         potential -= (1/leak_resistance) * (potential - resting_potential);
@@ -90,7 +90,7 @@ void Neuron::update_neuron_potential_leak(long long timestep) {
 bool Neuron::adjust_neuron_potential(float incoming_potential, long long timestep) {
     //Check that this neuron is not in a period of refraction
     //if it is we don't want to do anything to its neuron potential
-    if (timestep - refractory_period >= refractory_start_timestep) {
+    if (static_cast<unsigned int>(timestep) - refractory_period >= refractory_start_timestep) {
         //Check that the neuron potential if was in a period of refractory
         //is now not less than the resting potential
         if (potential < resting_potential) {
@@ -99,11 +99,11 @@ bool Neuron::adjust_neuron_potential(float incoming_potential, long long timeste
             //First we need to apply the leak to this neuron
             update_neuron_potential_leak(timestep);
         }
-        
+
         //Then we need to add the incoming potential to this neuron
         potential += incoming_potential;
         //std::cout<<potential<<std::endl;
-        
+
         //We need to set leak update step to be the current time step to prevent
         //leaking too much
         last_update_timestep = timestep;
@@ -113,12 +113,12 @@ bool Neuron::adjust_neuron_potential(float incoming_potential, long long timeste
             set_refractory(timestep);
             return true;
         }
-        
+
     }
-    
+
     //The neuron has not exceeded its threshold or is still in its refractory period
     return false;
-    
+
 }
 
 //Will process the firing of this neuron and return a vector of all of the
@@ -129,7 +129,7 @@ std::vector<Neuron*> Neuron::process_firing(long long timestep) {
     //when this neuron is queued for processing the firing.
     //Therefore all we have to do is adjust the neuron potential of all of its connections
     std::vector<Neuron*> new_to_process;
-    
+
     for (int i = 0; i < num_connections; i++) {
         //If the post synaptic neuron is ready to fire then we need to add it to the new_process
         //vector which will be returned
@@ -143,11 +143,10 @@ std::vector<Neuron*> Neuron::process_firing(long long timestep) {
 
 //Will set this neuron to be in a refractory_period
 void Neuron::set_refractory(long long timestep) {
-    refractory_start_timestep = timestep;
+    refractory_start_timestep = static_cast<unsigned int>(timestep);
     potential = refractory_potential;
 }
 
 float Neuron::get_potential() {
     return potential;
 }
-

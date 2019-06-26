@@ -5,6 +5,7 @@
 #include <ctime>
 #include <unordered_map>
 #include <iostream>
+#include <string>
 
 #include "network.h"
 
@@ -78,7 +79,7 @@ std::vector<Neuron*> Network::create_layer(int num_in_layer) {
 //Send the input values to the input layer which will propogate everything
 //through the network. It will return the number of neurons that have been processed
 //in this timestep
-int Network::process_inputs(float input_values[], long long timestep) {
+int Network::process_inputs(float* input_values, long long timestep, int num_inputs) {
     //Create an unordered map to keep track of all of the neurons added to the process queue
     std::unordered_map<Neuron*, bool> already_added_to_queue;
     //Keep track of all the neurons needed to be processed
@@ -86,11 +87,12 @@ int Network::process_inputs(float input_values[], long long timestep) {
     //Keep track of how many neurons have been processed
     int neurons_processed = 0;
     //Check that the amount of input values matches the number of input neurons
-    assert(input_values.size() == inputs.size());
+    //assert(num_inputs == inputs.size());
     //Give the input neurons the input values
     bool process_fire = false;
-    for (int i = 0; i < inputs.size(); i++) {
+    for (int i = 0; i < num_inputs; i++) {
         process_fire = inputs[i]->adjust_neuron_potential(input_values[i], timestep);
+
         //Queue up all the inputs that need to be processed for firing
         if (process_fire) {
             //Check to make sure it has not already been added to the queue to be processed
@@ -132,12 +134,50 @@ int Network::process_inputs(float input_values[], long long timestep) {
 }
 
 //Will return the output layer
-void Network::get_outputs() {
-    bool output_fire[outputs.size()] = {false} ;
-    for (unsigned int i = 0; i < outputs.size(); i++) {
-      if (outputs[i]->get_potential() < float(0)) output_fire[i] = true;
+std::string Network::get_outputs() {
+    std::string output_fire = "";
+    for (unsigned int i = 0; i < hidden_layers[0].size(); i++) {
+      if (hidden_layers[0][i]->get_potential() < float(0)) {
+        output_fire += " 1";
+      } else {
+        output_fire += " 0";
+      }
     }
-    //return output_fire;
+    return output_fire;
+}
+
+std::string Network::print_network() {
+    std::string network_string = "Inputs ";
+    for (unsigned int i = 0; i < inputs.size(); i++) {
+        if (inputs[i]->get_potential() < float(0)) {
+            network_string += " 1";
+        } else {
+            network_string += " 0";
+        }
+    }
+    network_string += "\n";
+    for (unsigned int i = 0; i < hidden_layers.size(); i++) {
+        network_string += "HL " + std::to_string(i);
+        for (unsigned int j = 0; j < hidden_layers[i].size(); j++) {
+            if (hidden_layers[i][j]->get_potential() < float(0)) {
+                network_string += " 1";
+            } else {
+                network_string += " 0";
+            }
+        }
+        network_string += "\n";
+    }
+
+    network_string += "Outputs ";
+    for (unsigned int i = 0; i < outputs.size(); i++) {
+        if (outputs[i]->get_potential() < float(0)) {
+            network_string += " 1";
+        } else {
+            network_string += " 0";
+        }
+    }
+    network_string += "\n";
+    return network_string;
 }
 
 int Network::get_num_neurons() {
