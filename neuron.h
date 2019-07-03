@@ -52,13 +52,6 @@ namespace SNN {
         unsigned int last_update_timestep;
         unsigned int refractory_start_timestep;
 
-        //HYPERPARAMETERS PER NEURON
-        float threshold;
-        float leak_resistance;
-        float resting_potential;
-        int refractory_period;
-        float refractory_potential;
-
   };
 }
 

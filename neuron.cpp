@@ -1,5 +1,6 @@
 #include <iostream>
 #include "neuron.h"
+#include "hyperparams_neuron.hpp"
 
 #include <vector>
 #include <cstdlib>
@@ -9,15 +10,9 @@ using namespace SNN;
 
 //DEFAULT CONSTRUCTOR
 Neuron::Neuron() {
-    threshold = 1;
-    leak_resistance = 10;
-    resting_potential = 0;
-    refractory_period = 0;
-    refractory_potential = -1;
-
     potential = 0;
     last_update_timestep = 0;
-    refractory_start_timestep = 0 - refractory_period;
+    refractory_start_timestep = 0 ;
     num_connections = 0;
 }
 
@@ -67,7 +62,7 @@ void Neuron::update_neuron_potential_leak(long long timestep) {
     //This method only works with resting potential = 0. Need to figure out
     //a different method for resting_potental != 0
     if (steps_since_last_update > 0) {
-        potential = potential * pow((1-1/leak_resistance), static_cast<float>(steps_since_last_update));
+        potential = potential * pow((1-1/Hyperparams_Neuron::LEAK_RESISTANCE), static_cast<float>(steps_since_last_update));
     }
 
     /*
@@ -90,11 +85,11 @@ void Neuron::update_neuron_potential_leak(long long timestep) {
 bool Neuron::adjust_neuron_potential(float incoming_potential, long long timestep) {
     //Check that this neuron is not in a period of refraction
     //if it is we don't want to do anything to its neuron potential
-    if (static_cast<unsigned int>(timestep) - refractory_period >= refractory_start_timestep) {
+    if (static_cast<unsigned int>(timestep) - Hyperparams_Neuron::REFRACTORY_PERIOD >= refractory_start_timestep) {
         //Check that the neuron potential if was in a period of refractory
         //is now not less than the resting potential
-        if (potential < resting_potential) {
-            potential = resting_potential;
+        if (potential < Hyperparams_Neuron::RESTING_POTENTIAL) {
+            potential = Hyperparams_Neuron::RESTING_POTENTIAL;
         } else {
             //First we need to apply the leak to this neuron
             update_neuron_potential_leak(timestep);
@@ -109,7 +104,7 @@ bool Neuron::adjust_neuron_potential(float incoming_potential, long long timeste
         last_update_timestep = timestep;
         //Set for firing if neuron potential is greater than threshold and put
         //this neuron into a period of refraction
-        if (potential >= threshold) {
+        if (potential >= Hyperparams_Neuron::THRESHOLD) {
             set_refractory(timestep);
             return true;
         }
@@ -133,7 +128,7 @@ std::vector<Neuron*> Neuron::process_firing(long long timestep) {
     for (int i = 0; i < num_connections; i++) {
         //If the post synaptic neuron is ready to fire then we need to add it to the new_process
         //vector which will be returned
-        if (connections[i].first->adjust_neuron_potential(connections[i].second * threshold, timestep)) {
+        if (connections[i].first->adjust_neuron_potential(connections[i].second * Hyperparams_Neuron::THRESHOLD, timestep)) {
             new_to_process.push_back(connections[i].first);
         }
     }
@@ -144,7 +139,7 @@ std::vector<Neuron*> Neuron::process_firing(long long timestep) {
 //Will set this neuron to be in a refractory_period
 void Neuron::set_refractory(long long timestep) {
     refractory_start_timestep = static_cast<unsigned int>(timestep);
-    potential = refractory_potential;
+    potential = Hyperparams_Neuron::REFRACTORY_POTENTIAL;
 }
 
 float Neuron::get_potential() {
