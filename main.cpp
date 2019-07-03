@@ -12,7 +12,8 @@ float* generate_rand_inputs(int num_of_inputs);
 int main() {
 
     const int NUM_LAYERS = 3;
-    std::vector<int> NEURONS_PER_LAYER {33600, 10000, 6};
+    std::cout << "Generating Network" << std::endl;
+    std::vector<int> NEURONS_PER_LAYER {25, 10, 4};
 
     Network* network = new Network(NUM_LAYERS, NEURONS_PER_LAYER);
 
@@ -20,9 +21,9 @@ int main() {
 
     for (int i = 0; i < 10; i++) {
         float* inputs = generate_rand_inputs(NEURONS_PER_LAYER[0]);
-        network->process_inputs(inputs, timestep, 33600);
+        //network->process_inputs(inputs, timestep, NEURONS_PER_LAYER[0]);
         timestep++;
-        //std::cout << network->print_network() << std::endl;
+        std::cout << network->print_network() << std::endl;
         delete(inputs);
     }
 

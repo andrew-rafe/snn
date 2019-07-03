@@ -5,10 +5,10 @@ namespace SNN {
     class Hyperparams_Neuron {
         public:
 
-        constexpr static int THRESHOLD = 1;
-        constexpr static int LEAK_RESISTANCE = 10;
+        constexpr static int THRESHOLD = 3;
+        constexpr static int LEAK_RESISTANCE = 5;
         constexpr static float RESTING_POTENTIAL = 0;
-        constexpr static int REFRACTORY_PERIOD = 1;
+        constexpr static int REFRACTORY_PERIOD = 0;
         constexpr static float REFRACTORY_POTENTIAL = -1;
 
         private:
