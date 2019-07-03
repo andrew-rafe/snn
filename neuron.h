@@ -35,6 +35,9 @@ namespace SNN {
 
 
         float get_potential();
+
+        //Will calculate and return the average inter spike interval of this neuron over the buffer size period
+        float get_interspike_interval();
         //friend std::ostream& operator<<(std::ostream& os, const Neuron& neuron);
 
     private:
@@ -51,6 +54,8 @@ namespace SNN {
         float potential;
         unsigned int last_update_timestep;
         unsigned int refractory_start_timestep;
+
+        std::vector<bool> firing_buffer;
 
   };
 }

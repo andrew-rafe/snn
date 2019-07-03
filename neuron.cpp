@@ -5,6 +5,7 @@
 #include <vector>
 #include <cstdlib>
 #include <cmath>
+#include <algorithm>
 
 using namespace SNN;
 
@@ -14,6 +15,7 @@ Neuron::Neuron() {
     last_update_timestep = 0;
     refractory_start_timestep = 0 ;
     num_connections = 0;
+    firing_buffer.resize(Hyperparams_Neuron::BUFFER_SIZE, false);
 }
 
 /*Neuron::Neuron(float threshold, float leak_resistance, float resting_potential,
@@ -63,6 +65,17 @@ void Neuron::update_neuron_potential_leak(long long timestep) {
     //a different method for resting_potental != 0
     if (steps_since_last_update > 0) {
         potential = potential * pow((1-1/Hyperparams_Neuron::LEAK_RESISTANCE), static_cast<float>(steps_since_last_update));
+    }
+
+    //Update the firing buffer to remove true fires from outside the buffer size
+    if (steps_since_last_update >= Hyperparams_Neuron::BUFFER_SIZE) {
+        std::fill(firing_buffer.begin(), firing_buffer.end(), false);
+    } else {
+        //Otherwise we need to set the oldest number of buffer positions back to false
+        //TODO: Figure out a more efficient way to do this. CAN I USE FILL LIKE ABOVE
+        for (int i = 1; i < steps_since_last_update; i++) {
+            firing_buffer[(timestep + i) % Hyperparams_Neuron::BUFFER_SIZE] = false;
+        }
     }
 
     /*
@@ -133,6 +146,9 @@ std::vector<Neuron*> Neuron::process_firing(long long timestep) {
         }
     }
 
+    //Add this timestep to the firing buffer
+    firing_buffer[timestep % Hyperparams_Neuron::BUFFER_SIZE] = true;
+
     return new_to_process;
 }
 
@@ -144,4 +160,10 @@ void Neuron::set_refractory(long long timestep) {
 
 float Neuron::get_potential() {
     return potential;
+}
+
+float Neuron::get_interspike_interval() {
+    int num_fires = std::count(firing_buffer.begin(), firing_buffer.end(), true);
+    //std::cout << num_fires;
+    return (num_fires != 0) ? (float)Hyperparams_Neuron::BUFFER_SIZE/(float)num_fires : 0;
 }

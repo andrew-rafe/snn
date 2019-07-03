@@ -23,6 +23,9 @@ namespace SNN {
         int get_num_neurons();
         std::string get_outputs();
         std::string print_network();
+
+        //Will retrieve an action based on the lowest interspike interval of the outputs.
+        int get_action();
         //friend std::ostream& operator<<(std::ostream& os, const Network& network);
 
     private:

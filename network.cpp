@@ -130,19 +130,31 @@ int Network::process_inputs(const std::vector<float>& input_values, long long ti
         }
     }
 
+    //Need to process all the output neurons every step
+    for (auto it = outputs.begin(); it != outputs.end(); ++it) {
+        (*it)->update_neuron_potential_leak(timestep);
+    }
+
     return neurons_processed;
 }
 
 //Will return the output layer
 std::string Network::get_outputs() {
     std::string output_fire = "";
-    for (unsigned int i = 0; i < hidden_layers[0].size(); i++) {
+
+    for (auto it = outputs.begin(); it != outputs.end(); ++it) {
+        //std::cout << (*it)->get_interspike_interval() << " ";
+        output_fire += (*it)->get_interspike_interval();
+        output_fire += "  ";
+    }
+
+    /*for (unsigned int i = 0; i < hidden_layers[0].size(); i++) {
       if (hidden_layers[0][i]->get_potential() < float(0)) {
         output_fire += " 1";
       } else {
         output_fire += " 0";
       }
-    }
+    }*/
     return output_fire;
 }
 
@@ -195,3 +207,20 @@ int Network::get_num_neurons() {
     os << "Neuron Potential: " << neuron.potential;
     return os;
 }*/
+
+int Network::get_action() {
+    //Find the lowest interspike interval
+    int action = 0;
+    float curr_interval = 0;
+    //Essentially set it to infinity
+    float lowest_interval = 1000;
+    for (int i = 0; i < outputs.size(); i++) {
+        curr_interval = outputs[i]->get_interspike_interval();
+        if (curr_interval < lowest_interval) {
+            action = i;
+            lowest_interval = curr_interval;
+        }
+    }
+
+    return action;
+}

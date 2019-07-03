@@ -7,7 +7,7 @@
 
 using namespace SNN;
 
-float* generate_rand_inputs(int num_of_inputs);
+std::vector<float> generate_rand_inputs(int num_of_inputs);
 
 int main() {
 
@@ -17,14 +17,15 @@ int main() {
 
     Network* network = new Network(NUM_LAYERS, NEURONS_PER_LAYER);
 
-    long long timestep = 1;
+    long long timestep = 0;
 
-    for (int i = 0; i < 10; i++) {
-        float* inputs = generate_rand_inputs(NEURONS_PER_LAYER[0]);
-        //network->process_inputs(inputs, timestep, NEURONS_PER_LAYER[0]);
-        timestep++;
-        std::cout << network->print_network() << std::endl;
-        delete(inputs);
+    for (int i = 0; i < 100; i++) {
+        std::vector<float> inputs = generate_rand_inputs(NEURONS_PER_LAYER[0]);
+        for (int i = 0; i < 20; i++) {
+            network->process_inputs(inputs, timestep, NEURONS_PER_LAYER[0]);
+        }
+        std::cout << timestep << ":" << network->get_action() << std::endl;
+        timestep++;   
     }
 
     delete network;
@@ -33,12 +34,12 @@ int main() {
 }
 
 //Generate some random inputs
-float* generate_rand_inputs(int num_of_inputs) {
+std::vector<float> generate_rand_inputs(int num_of_inputs) {
 
-    float* rand_inputs = new float[num_of_inputs];
+    std::vector<float> rand_inputs;
 
     for (int i = 0; i < num_of_inputs; i++) {
-        rand_inputs[i] = static_cast<float>((rand() / static_cast<float>(RAND_MAX)));
+        rand_inputs.push_back(static_cast<float>((rand() / static_cast<float>(RAND_MAX))/10));
     }
 
     return rand_inputs;
