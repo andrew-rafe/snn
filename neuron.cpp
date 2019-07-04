@@ -45,7 +45,7 @@ void Neuron::set_neuron_connections(const std::vector<Neuron*>& neurons_in_next)
     //next layer
     for (int i = 0; i < neurons_in_next.size(); i++) {
         //Will add one of the connections with a random weight
-        connections.push_back({neurons_in_next[i], (static_cast<float>(rand()) / static_cast<float>(RAND_MAX))});
+        connections.push_back({neurons_in_next[i], ((static_cast<float>(rand()) / static_cast<float>(RAND_MAX))*2 - 1)});
         num_connections++;
     }
 
