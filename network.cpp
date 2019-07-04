@@ -19,7 +19,6 @@ Network::Network(const int num_layers, const std::vector<int>& neurons_per_layer
 
     //Check that the network has an input, at least one hidden and an output layer
     //i.e. that the num layers is greater or equal to 3
-    assert(num_layers >= 3);
     //Then need to check whether the number of layers matches the vector size
     //storing the neurons per layer
     assert(neurons_per_layer.size() == num_layers);
