@@ -27,6 +27,7 @@ namespace SNN {
         //Will retrieve an action based on the lowest interspike interval of the outputs.
         int get_action();
         //friend std::ostream& operator<<(std::ostream& os, const Network& network);
+        void process_training(int reward);
 
     private:
 

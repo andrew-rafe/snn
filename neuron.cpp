@@ -167,3 +167,48 @@ float Neuron::get_interspike_interval() {
     //std::cout << num_fires;
     return (num_fires != 0) ? (float)Hyperparams_Neuron::BUFFER_SIZE/(float)num_fires : 0;
 }
+
+
+//TRAINING HAPPENS AT INDIVIDUAL NEURON LEVEL
+//GETS THE REWARD AND CHANGES ITS WEIGHTS ACCORDINGLY
+void Neuron::process_training(const int& reward) {
+    //if the reward is positive then we want to strengthen connections with those that fired together
+    //if the reward is negative we want to weaken connections with those that fired together
+    //We need some probing of the post_synaptic neuron to see if it fired at that same time
+    //So pass in a buffer index and ask whether it fired as well
+    for (int i = 0; i < Hyperparams_Neuron::BUFFER_SIZE; i++) {
+        //THIS NEEDS TO BE MADE MORE EFFICIENT
+        //Look through all of the connections
+        if (firing_buffer[i] == true) {
+            for (auto it = connections.begin(); it != connections.end(); ++it) {
+                if ((*it).first->did_it_fire(i)) {
+                    //Strengthen or weaken based on reward
+                    (*it).second += (reward > 0) ? 0.01 : -0.01;
+                    
+                    if ((*it).second < -1) {
+                        (*it).second = -1;
+                    } else if ((*it).second > 1) {
+                        (*it).second = 1;
+                    }
+                    std::cout << "Changing weight to: " << (*it).second << std::endl;
+                } else if (!(*it).first->did_it_fire(i)) {
+                    //Strengthen or weaken based on reward
+                    (*it).second += (reward > 0) ? -0.01 : 0.01;
+                    
+                    if ((*it).second < -1) {
+                        (*it).second = -1;
+                    } else if ((*it).second > 1) {
+                        (*it).second = 1;
+                    }
+                    std::cout << "Changing weight to: " << (*it).second << std::endl;
+                }
+                //MIGHT NEED TO CLAMP THE WEIGHTS
+            }
+        }
+        
+    }
+}
+
+bool Neuron::did_it_fire(const int& buffer_index) {
+    return firing_buffer[buffer_index];
+}

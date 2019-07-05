@@ -223,3 +223,17 @@ int Network::get_action() {
 
     return action;
 }
+
+void Network::process_training(int reward) {
+    //Go through all layers and pass on the reward info
+    for (auto it = inputs.begin(); it != inputs.end(); ++it) {
+        (*it)->process_training(reward);
+    }
+    //For all the hidden layers
+    for (auto it = hidden_layers.begin(); it != hidden_layers.end(); ++it) {
+        for (auto n_it = (*it).begin(); n_it != (*it).end(); ++it) {
+            (*n_it)->process_training(reward);
+        }
+    }
+    //Dont need to deal with the outputs as they have no outgoing connections
+}

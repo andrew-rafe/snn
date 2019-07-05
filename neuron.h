@@ -40,6 +40,9 @@ namespace SNN {
         float get_interspike_interval();
         //friend std::ostream& operator<<(std::ostream& os, const Neuron& neuron);
 
+        void process_training(const int& reward);
+        bool did_it_fire(const int& buffer_index);
+
     private:
 
         //HOLDS ALL OF THE NEURONS AND THE WEIGHTS BETWEEN THIS

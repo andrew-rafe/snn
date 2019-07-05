@@ -6,7 +6,7 @@ namespace SNN {
         public:
 
         constexpr static int THRESHOLD = 1;
-        constexpr static int LEAK_RESISTANCE = 5;
+        constexpr static int LEAK_RESISTANCE = 4;
         constexpr static float RESTING_POTENTIAL = 0;
         constexpr static int REFRACTORY_PERIOD = 5;
         constexpr static float REFRACTORY_POTENTIAL = -1;
